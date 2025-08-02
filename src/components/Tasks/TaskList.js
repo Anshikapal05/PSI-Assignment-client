@@ -1,88 +1,3 @@
-// import React, { useEffect, useState } from "react";
-// import axios from "axios";
-
-// const TaskList = ({ reloadFlag }) => {
-//   const [tasks, setTasks] = useState([]);
-
-//   const loadTasks = async () => {
-//     try {
-//       const userToken = localStorage.getItem("token");
-
-//       const response = await axios.get("/api/tasks", {
-//         headers: { Authorization: `Bearer ${userToken}` },
-//       });
-
-//       setTasks(response.data);
-//     } catch (err) {
-//       console.error("Error fetching tasks:", err);
-//     }
-//   };
-
-//   useEffect(() => {
-//     loadTasks();
-//   }, [reloadFlag]);
-
-//   const deleteTask = async (id) => {
-//     const userToken = localStorage.getItem("token");
-//     await axios.delete(`/api/tasks/${id}`, {
-//       headers: { Authorization: `Bearer ${userToken}` },
-//     });
-//     loadTasks();
-//   };
-
-//   return (
-//     <div>
-//       <h3>Your Tasks</h3>
-//       {tasks.length === 0 ? (
-//         <p>No tasks available</p>
-//       ) : (
-//         <ul>
-//           {tasks.map((task) => (
-//             <li key={task._id}>
-                
-//               {/* <strong>{task.title}</strong> - {task.status} - {task.priority} */}
-
-//               <strong>{task.title}</strong> - {task.status} - {task.priority}
-// {task.assignedTo && (
-//   <div>
-//     <small>Assigned To: {task.assignedTo.name || task.assignedTo.email}</small>
-//   </div>
-// )}
-
-//               <br />
-//               Due:{" "}
-//               {task.dueDate
-//                 ? new Date(task.dueDate).toLocaleDateString()
-//                 : "N/A"}
-//               <br />
-//               {task.description && <p>{task.description}</p>}
-//               {task.attachedDocuments?.length > 0 && (
-//                 <ul>
-//                   {task.attachedDocuments.map((file, idx) => (
-//                     <li key={idx}>
-//                       <a
-//                         href={`http://localhost:5000/${file}`}
-//                         target="_blank"
-//                         rel="noopener noreferrer"
-//                       >
-//                         View PDF {idx + 1}
-//                       </a>
-//                     </li>
-//                   ))}
-//                 </ul>
-//               )}
-//               <button onClick={() => deleteTask(task._id)}>Delete</button>
-//             </li>
-//           ))}
-//         </ul>
-//       )}
-//     </div>
-//   );
-// };
-
-// export default TaskList;
-
-
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
@@ -173,25 +88,26 @@ const TaskList = ({ reloadFlag }) => {
                   )}
                   <td className="py-2 px-4 border">{task.description || "—"}</td>
                   <td className="py-2 px-4 border">
-                    {task.attachedDocuments?.length > 0 ? (
-                      <ul className="list-disc pl-4">
-                        {task.attachedDocuments.map((file, idx) => (
-                          <li key={idx}>
-                            <a
-                              href={`http://localhost:5000/${file}`}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="text-blue-600 underline"
-                            >
-                              View PDF {idx + 1}
-                            </a>
-                          </li>
-                        ))}
-                      </ul>
-                    ) : (
-                      "None"
-                    )}
-                  </td>
+  {Array.isArray(task.attachedDocuments) && task.attachedDocuments.length > 0 ? (
+    <ul className="list-disc pl-4">
+      {task.attachedDocuments.map((file, idx) => (
+        <li key={idx}>
+          <a
+            href={`https://psi-assignment-server.onrender.com/${file}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-blue-600 underline"
+          >
+            View PDF {idx + 1}
+          </a>
+        </li>
+      ))}
+    </ul>
+  ) : (
+    "None"
+  )}
+</td>
+
                   <td className="py-2 px-4 border">
                     <button
                       onClick={() => deleteTask(task._id)}

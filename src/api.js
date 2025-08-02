@@ -1,5 +1,5 @@
 import axios from "axios";
-const BASE_URL = "https://psi-assignment-server.onrender.com";
+const BASE_URL = process.env.REACT_APP_API_BASE_URL || "http://localhost:5000";
 
 const API = axios.create({
   baseURL: BASE_URL,
