@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
-
+import API from "../../api"
 const TaskList = ({ reloadFlag }) => {
   const [tasks, setTasks] = useState([]);
   const [isAdmin, setIsAdmin] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [reloadKey, setReloadKey] = useState(0);
 
   const loadTasks = async (page = 1) => {
   try {
@@ -17,9 +18,11 @@ const TaskList = ({ reloadFlag }) => {
       setIsAdmin(decoded?.role === "admin");
     }
 
-    const response = await axios.get(`/api/tasks?page=${page}`, {
-      headers: { Authorization: `Bearer ${userToken}` },
-    });
+    // const response = await axios.get(`/api/tasks?page=${page}`, {
+    //   headers: { Authorization: `Bearer ${userToken}` },
+    // });
+    const response = await API.get(`/api/tasks?page=${page}`);
+
 
     const { tasks = [], currentPage = 1, totalPages = 1 } = response.data || {};
 
@@ -33,17 +36,26 @@ const TaskList = ({ reloadFlag }) => {
 };
 
 
-  useEffect(() => {
+   useEffect(() => {
     loadTasks(currentPage);
-  }, [reloadFlag, currentPage]);
+  }, [reloadFlag, currentPage]); 
 
+  // const deleteTask = async (id) => {
+  //   const userToken = localStorage.getItem("token");
+  //   await axios.delete(`/api/tasks/${id}`, {
+  //     headers: { Authorization: `Bearer ${userToken}` },
+  //   });
+  //   loadTasks(currentPage);
+  // };
   const deleteTask = async (id) => {
-    const userToken = localStorage.getItem("token");
-    await axios.delete(`/api/tasks/${id}`, {
-      headers: { Authorization: `Bearer ${userToken}` },
-    });
+  try {
+    await API.delete(`/api/tasks/${id}`);
     loadTasks(currentPage);
-  };
+  } catch (err) {
+    console.error("Error deleting task:", err);
+  }
+};
+
 
   const handlePrevPage = () => {
     if (currentPage > 1) setCurrentPage(currentPage - 1);
