@@ -1,14 +1,15 @@
 import axios from "axios";
+const BASE_URL = "https://psi-assignment-server.onrender.com";
 
 const API = axios.create({
-  baseURL: "http://localhost:5000", // update if backend runs on different port
+  baseURL: BASE_URL,
 });
 
-// Add JWT token if available
+// Attach token from localStorage if available
 API.interceptors.request.use((req) => {
   const token = localStorage.getItem("token");
   if (token) {
-    req.headers.Authorization = `Bearer ${token}`; 
+    req.headers.Authorization = `Bearer ${token}`;
   }
   return req;
 });
