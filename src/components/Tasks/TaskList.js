@@ -9,25 +9,29 @@ const TaskList = ({ reloadFlag }) => {
   const [totalPages, setTotalPages] = useState(1);
 
   const loadTasks = async (page = 1) => {
-    try {
-      const userToken = localStorage.getItem("token");
+  try {
+    const userToken = localStorage.getItem("token");
 
-      if (userToken) {
-        const decoded = jwtDecode(userToken);
-        setIsAdmin(decoded?.role === "admin");
-      }
-
-      const response = await axios.get(`/api/tasks?page=${page}`, {
-        headers: { Authorization: `Bearer ${userToken}` },
-      });
-
-      setTasks(response.data.tasks);
-      setCurrentPage(response.data.currentPage);
-      setTotalPages(response.data.totalPages);
-    } catch (err) {
-      console.error("Error fetching tasks:", err);
+    if (userToken) {
+      const decoded = jwtDecode(userToken);
+      setIsAdmin(decoded?.role === "admin");
     }
-  };
+
+    const response = await axios.get(`/api/tasks?page=${page}`, {
+      headers: { Authorization: `Bearer ${userToken}` },
+    });
+
+    const { tasks = [], currentPage = 1, totalPages = 1 } = response.data || {};
+
+    setTasks(Array.isArray(tasks) ? tasks : []);
+    setCurrentPage(currentPage);
+    setTotalPages(totalPages);
+  } catch (err) {
+    console.error("Error fetching tasks:", err);
+    setTasks([]); // fallback to empty list on error
+  }
+};
+
 
   useEffect(() => {
     loadTasks(currentPage);
@@ -53,9 +57,9 @@ const TaskList = ({ reloadFlag }) => {
     <div className="p-6 bg-white shadow-md rounded-lg">
       <h3 className="text-2xl font-bold mb-4 text-gray-800">Your Tasks</h3>
 
-      {tasks.length === 0 ? (
-        <p className="text-gray-600">No tasks available</p>
-      ) : (
+      {Array.isArray(tasks) && tasks.length === 0 ? (
+  <p className="text-gray-600">No tasks available</p>
+) : (
         <div className="overflow-x-auto">
           <table className="min-w-full bg-white border border-gray-200">
             <thead className="bg-gray-100 text-left text-gray-600 text-sm uppercase tracking-wider">
